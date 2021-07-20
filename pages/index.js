@@ -1,8 +1,9 @@
-import { method } from "lodash";
+import nookies from "nookies";
+import jwt from "jsonwebtoken";
 import { useState, setState, useEffect } from "react";
 import Box from "../src/components/Box";
 import MainGrid from "../src/components/MainGrid";
-import ProfileRelationsBoxWrapper from "../src/components/ProfileRelations";
+import { ProfileRelationsBoxWrapper } from "../src/components/ProfileRelations";
 import {
   AlurakutMenu,
   AlurakutProfileSidebarMenuDefault,
@@ -11,15 +12,17 @@ import {
 
 function ProfileSideBar(props) {
   return (
-    <Box>
+    <Box as="aside">
       <img
         src={`https://github.com/${props.githubUser}.png`}
-        alt="Foto"
         style={{ borderRadius: "8px" }}
       />
       <hr />
-      <a className="" href={`https://github.com/${props.githubUser}`}></a>@
-      {props.githubUser}
+      <p>
+        <a className="boxLink" href={`https://github.com/${props.githubUser}`}>
+          @{props.githubUser}
+        </a>
+      </p>
       <hr />
       <AlurakutProfileSidebarMenuDefault />
     </Box>
@@ -33,7 +36,7 @@ function ProfileRelationsBox(props) {
         {props.title} ({props.items.length})
       </h2>
       <ul>
-        {props.items.map((item) => {
+        {/*props.items.map((item) => {
           return (
             <li key={item.id}>
               <a href={`/user/${item.title}`}>
@@ -42,14 +45,14 @@ function ProfileRelationsBox(props) {
               </a>
             </li>
           );
-        })}
+        })} */}
       </ul>
     </ProfileRelationsBoxWrapper>
   );
 }
 
-export default function Home() {
-  const meGithubUser = "brunopscavalcante";
+export default function Home(props) {
+  const meGithubUser = props.githubUser;
   const [comunidades, setComunidades] = useState([]);
   const pessoasFavoritas = [
     "omariosouto",
@@ -61,7 +64,7 @@ export default function Home() {
 
   const [seguidores, setSeguidores] = useState([]);
   useEffect(function () {
-    fetch("https://api.github.com/users/peleteiro/followers")
+    fetch("https://api.github.com/users/peas/followers")
       .then((res) => res.json())
       .then((json) => setSeguidores(json));
 
@@ -75,8 +78,8 @@ export default function Home() {
       body: JSON.stringify({
         query: `query {
         allCommunities {
-          title
           id
+          title
           imageUrl
           creatorSlug
         }
@@ -118,26 +121,24 @@ export default function Home() {
                 console.log("Campo: ", dadosDoForm.get("image"));
 
                 const comunidade = {
-                  id: new Date().toISOString(),
-                  titulo: dadosDoForm.get("title"),
+                  title: dadosDoForm.get("title"),
                   imageUrl: dadosDoForm.get("image"),
-                  meGithubUser
+                  creatorSlug: meGithubUser,
                 };
 
-                fetech('/api/comunidades', {
-                  method: 'POST',
+                fetch("/api/comunidades", {
+                  method: "POST",
                   headers: {
-                    'Content-Type': 'application/json',
-                  }
-                  body: JSON.stringify({comunidade})
-                })
-                .then(async (res) => {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(comunidade),
+                }).then(async (res) => {
                   const dados = await res.json();
-                  console.log(dados)
-                })
-
-                const newcomunidades = [...comunidades, comunidade];
-                setComunidades(newcomunidades);
+                  console.log(dados.registroCriado);
+                  const comunidade = dados.registroCriado;
+                  const newcomunidades = [...comunidades, comunidade];
+                  setComunidades(newcomunidades);
+                });
               }}
             >
               <div>
@@ -168,7 +169,7 @@ export default function Home() {
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">Comunidades ({comunidades.length})</h2>
             <ul>
-              {comunidades.map((item) => {
+              {comunidades.slice(0, 6).map((item) => {
                 return (
                   <li key={item.id}>
                     <a href={`/communities/${item.id}`}>
@@ -186,10 +187,10 @@ export default function Home() {
               Pessoas da comunidade ({pessoasFavoritas.length})
             </h2>
             <ul>
-              {pessoasFavoritas.map((item) => {
+              {pessoasFavoritas.slice(0, 6).map((item) => {
                 return (
                   <li key={item}>
-                    <a href={`/user/${item}`} key={item}>
+                    <a href={`/users/${item}`}>
                       <img src={`https://github.com/${item}.png`} />
                       <span>{item}</span>
                     </a>
@@ -203,3 +204,36 @@ export default function Home() {
     </>
   );
 }
+
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context);
+  const token = cookies.USER_TOKEN;
+  // console.log(githubUser);
+  // console.log("Token decodificado", jwt.decode(token));
+
+  const decodedToken = jwt.decode(token);
+  const githubUser = decodedToken?.githubUser;
+
+  if (!githubUser) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  // const { isAuthenticated } = fetch("https://alurakut.vercel.app/api/auth", {
+  //     headers: {
+  //       Authorization: token,
+  //     },
+  //   }).then((res) => res.json());
+
+  return {
+    props: {
+      githubUser,
+    },
+  };
+}
+
+//   console.log("isAuthenticated: ", isAuthenticated);

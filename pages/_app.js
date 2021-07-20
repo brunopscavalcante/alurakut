@@ -10,32 +10,30 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
     font-family: sans-serif;
-    background-color: #D9E6F6
+    background-color: #D9E6F6;
   }
 
   #__next {
     display: flex;
     min-height: 100vh;
-    flex-direction: column
+    flex-direction: column;
   }
 
-img {
-  max-width: 100%;
-  height: auto;
-  flex-direction: column;
-}
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
 
-${AlurakutStyles}
-`;
+  ${AlurakutStyles}
+`
+
 const theme = {
   colors: {
-    primary: "#0070f3",
+    primary: 'red',
   },
-};
+}
 
 export default function App({ Component, pageProps }) {
   return (
@@ -45,5 +43,5 @@ export default function App({ Component, pageProps }) {
         <Component {...pageProps} />
       </ThemeProvider>
     </>
-  );
+  )
 }

@@ -3,7 +3,7 @@ import { SiteClient } from "datocms-client";
 export default async function recebedorDeRequest(req, res) {
   console.log(req.method);
   if (req.method == "POST") {
-    const TOKEN = ":P";
+    const TOKEN = "8cfd6872424885c9a5bdee8669dac8";
     const client = new SiteClient(TOKEN);
 
     const registroCriado = await client.items.create({
@@ -18,8 +18,9 @@ export default async function recebedorDeRequest(req, res) {
 
     res.json({
       dados: "algum dado",
-      registroCriado,
+      registroCriado: registroCriado,
     });
+	return;
   }
 
   res.status(404).json({

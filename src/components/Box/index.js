@@ -7,7 +7,6 @@ const Box = styled.div`
   padding: 16px;
 
   margin-bottom: 10px;
-  border-radius: 8px;
   .boxLink {
     font-size: 14px;
     color: #2E7BB4;
@@ -16,11 +15,11 @@ const Box = styled.div`
   }
   .title {
     font-size: 32px;
-    font-weight: 400p;
+    font-weight: 400;
     margin-bottom: 20px;
   }
   .subTitle {
-    font-size: 32px;
+    font-size: 18px;
     font-weight: 400;
     margin-bottom: 20px;
   }
@@ -43,20 +42,20 @@ const Box = styled.div`
     color: #333333;
     border: 0;
     padding: 14px 16px;
-    margin-bottom: 140px;
+    margin-bottom: 14px;
     border-radius: 10000px;
     ::placeholder {
       color: #333333;
       opacity: 1;
     }
-    button {
-      border: 0;
-      padding: 8px 12px;
-      color: #FFFFFF;
-      border-radius: 10000px;
-      background-color: #6F92BB;
-    }
   }
+	button {
+	  border: 0;
+	  padding: 8px 12px;
+	  color: #FFFFFF;
+	  border-radius: 10000px;
+	  background-color: #6F92BB;
+	}
 `; 
 
 export default Box;
